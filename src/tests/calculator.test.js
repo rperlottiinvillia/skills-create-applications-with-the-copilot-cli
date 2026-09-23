@@ -10,7 +10,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { calculate, OPERATIONS } = require('../calculator');
+const { calculate, OPERATIONS, modulo, power, squareRoot } = require('../calculator');
 
 // Exemplos baseados na imagem images/calc-basic-operations.png:
 //   2 + 3, 10 - 4, 45 * 2, 20 / 5
@@ -28,6 +28,20 @@ test('multiplication: 45 * 2 = 90 (exemplo da imagem)', () => {
 
 test('division: 20 / 5 = 4 (exemplo da imagem)', () => {
   assert.equal(calculate(20, 'division', 5), 4);
+});
+
+// Exemplos baseados na imagem images/calc-extended-operations.png:
+//   modulo with 5 % 2, power with 2 ^ 3, square root with √16
+test('modulo: 5 % 2 = 1 (exemplo da imagem)', () => {
+  assert.equal(modulo(5, 2), 1);
+});
+
+test('power: 2 ^ 3 = 8 (exemplo da imagem)', () => {
+  assert.equal(power(2, 3), 8);
+});
+
+test('squareRoot: √16 = 4 (exemplo da imagem)', () => {
+  assert.equal(squareRoot(16), 4);
 });
 
 test.describe('addition', () => {
@@ -110,6 +124,66 @@ test.describe('operação inválida', () => {
     assert.throws(
       () => calculate(1, 'modulo', 2),
       /Operação desconhecida/
+    );
+  });
+});
+
+test.describe('modulo', () => {
+  test('resto da divisão de dois números positivos', () => {
+    assert.equal(modulo(10, 3), 1);
+  });
+
+  test('resto quando o dividendo é menor que o divisor', () => {
+    assert.equal(modulo(3, 10), 3);
+  });
+
+  test('resto com números negativos', () => {
+    assert.equal(modulo(-10, 3), -1);
+  });
+
+  test('lança erro ao calcular módulo por zero', () => {
+    assert.throws(
+      () => modulo(1, 0),
+      /Módulo por zero não é permitido\./
+    );
+  });
+});
+
+test.describe('power', () => {
+  test('eleva um número positivo a uma potência positiva', () => {
+    assert.equal(power(2, 10), 1024);
+  });
+
+  test('qualquer número elevado a zero é 1', () => {
+    assert.equal(power(5, 0), 1);
+  });
+
+  test('expoente negativo retorna fração', () => {
+    assert.equal(power(2, -1), 0.5);
+  });
+
+  test('base negativa com expoente par', () => {
+    assert.equal(power(-2, 2), 4);
+  });
+});
+
+test.describe('squareRoot', () => {
+  test('raiz quadrada de um número positivo', () => {
+    assert.equal(squareRoot(9), 3);
+  });
+
+  test('raiz quadrada de zero', () => {
+    assert.equal(squareRoot(0), 0);
+  });
+
+  test('raiz quadrada de número decimal', () => {
+    assert.equal(squareRoot(2), Math.sqrt(2));
+  });
+
+  test('lança erro para números negativos', () => {
+    assert.throws(
+      () => squareRoot(-4),
+      /Não é possível calcular a raiz quadrada de um número negativo\./
     );
   });
 });
