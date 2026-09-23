@@ -10,6 +10,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
 const { calculate, OPERATIONS } = require('../calculator');
 
 // Exemplos baseados na imagem images/calc-basic-operations.png:
@@ -105,10 +106,46 @@ test.describe('division', () => {
   });
 });
 
+test.describe('modulo', () => {
+  test('calcula o resto da divisão', () => {
+    assert.equal(calculate(10, 'modulo', 3), 1);
+  });
+
+  test('lança erro ao calcular módulo por zero', () => {
+    assert.throws(
+      () => calculate(10, 'modulo', 0),
+      /Módulo por zero não é permitido\./
+    );
+  });
+});
+
+test.describe('exponentiation', () => {
+  test('eleva um número a outro', () => {
+    assert.equal(calculate(2, 'exponentiation', 3), 8);
+  });
+
+  test('aceita expoente zero', () => {
+    assert.equal(calculate(7, 'exponentiation', 0), 1);
+  });
+});
+
+test.describe('square root', () => {
+  test('calcula a raiz quadrada de um número positivo', () => {
+    assert.equal(calculate(81, 'squareRoot'), 9);
+  });
+
+  test('lança erro para raiz quadrada de número negativo', () => {
+    assert.throws(
+      () => calculate(-1, 'squareRoot'),
+      /Raiz quadrada de número negativo não é permitida\./
+    );
+  });
+});
+
 test.describe('operação inválida', () => {
   test('lança erro para operação desconhecida', () => {
     assert.throws(
-      () => calculate(1, 'modulo', 2),
+      () => calculate(1, 'operacao-inexistente', 2),
       /Operação desconhecida/
     );
   });
@@ -131,5 +168,39 @@ test.describe('mapa de aliases de operadores (OPERATIONS)', () => {
     assert.equal(OPERATIONS['/'], 'division');
     assert.equal(OPERATIONS.divide, 'division');
     assert.equal(OPERATIONS['divisão'], 'division');
+
+    assert.equal(OPERATIONS['%'], 'modulo');
+    assert.equal(OPERATIONS.mod, 'modulo');
+    assert.equal(OPERATIONS['módulo'], 'modulo');
+
+    assert.equal(OPERATIONS['**'], 'exponentiation');
+    assert.equal(OPERATIONS.pow, 'exponentiation');
+    assert.equal(OPERATIONS['potência'], 'exponentiation');
+
+    assert.equal(OPERATIONS.sqrt, 'squareRoot');
+    assert.equal(OPERATIONS.squareroot, 'squareRoot');
+    assert.equal(OPERATIONS['raiz-quadrada'], 'squareRoot');
+  });
+});
+
+test.describe('CLI', () => {
+  test('aceita raiz quadrada como operação unária', () => {
+    const result = spawnSync(process.execPath, ['src/calculator.js', 'sqrt', '9'], {
+      encoding: 'utf8',
+      cwd: process.cwd(),
+    });
+
+    assert.equal(result.status, 0);
+    assert.equal(result.stdout.trim(), '3');
+  });
+
+  test('rejeita segundo operando em raiz quadrada', () => {
+    const result = spawnSync(process.execPath, ['src/calculator.js', '9', 'sqrt', '3'], {
+      encoding: 'utf8',
+      cwd: process.cwd(),
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /aceita apenas um número/);
   });
 });
