@@ -72,42 +72,6 @@ function calculate(a, operation, b) {
 }
 
 /**
- * Retorna o resto da divisão de a por b.
- * @param {number} a - Dividendo.
- * @param {number} b - Divisor.
- * @returns {number} Resto da divisão de a por b.
- */
-function modulo(a, b) {
-  if (b === 0) {
-    throw new Error('Módulo por zero não é permitido.');
-  }
-  return a % b;
-}
-
-/**
- * Retorna a base elevada ao expoente informado.
- * @param {number} base - Base da potência.
- * @param {number} exponent - Expoente.
- * @returns {number} Resultado de base elevada a exponent.
- */
-function power(base, exponent) {
-  return Math.pow(base, exponent);
-}
-
-/**
- * Retorna a raiz quadrada de n.
- * @param {number} n - Número do qual se deseja calcular a raiz quadrada.
- * @returns {number} Raiz quadrada de n.
- * @throws {Error} Se n for negativo, pois a raiz quadrada não é definida nos reais.
- */
-function squareRoot(n) {
-  if (n < 0) {
-    throw new Error('Não é possível calcular a raiz quadrada de um número negativo.');
-  }
-  return Math.sqrt(n);
-}
-
-/**
  * Ponto de entrada da CLI: lê os argumentos, valida e imprime o resultado.
  */
 function main() {
@@ -151,4 +115,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { calculate, OPERATIONS, modulo, power, squareRoot };
+module.exports = { calculate, OPERATIONS };
